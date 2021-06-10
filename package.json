@@ -1,0 +1,29 @@
+{
+  "name": "pathway-curator-backend",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "debug": "~2.6.8",
+    "http-proxy-middleware": "^1.1.1",
+    "koa": "^2.3.0",
+    "koa-bodyparser": "^4.2.0",
+    "koa-convert": "^1.2.0",
+    "koa-json": "^2.0.2",
+    "koa-logger": "^3.0.0",
+    "koa-onerror": "^3.1.0",
+    "koa-router": "^7.2.1",
+    "koa-static": "^3.0.0",
+    "koa-views": "^6.0.2",
+    "koa2-cors": "^2.0.6",
+    "mysql": "^2.18.1",
+    "nunjucks": "^3.2.3"
+  },
+  "devDependencies": {
+    "babel-eslint": "7.1.1",
+    "eslint": "3.18.0"
+  }
+}
