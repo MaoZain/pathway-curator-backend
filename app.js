@@ -65,6 +65,7 @@ router.post('/back', async (ctx, next) => {
   ctx.state = {
     title: 'Welcome to pathway backend dev'
   }
+  console.log("mao",ctx.request.body)
   ctx.response.body = ctx.state.title
 })
 
