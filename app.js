@@ -43,6 +43,8 @@ app.use(bodyparser())
   .use(router.allowedMethods())
 // logger
 app.use(async (ctx, next) => {
+  ctx.set("Access-Control-Allow-Origin", "*");
+
   const start = new Date()
   await next()
   const ms = new Date() - start
@@ -50,16 +52,22 @@ app.use(async (ctx, next) => {
 })
 
 //cors
-// app.use(cors())
+app.use(cors())
+
+app.use(async (ctx, next) => {
+  ctx.set("Access-Control-Allow-Origin", "*")
+  await next()
+})
 
 
-router.get('/back', async (ctx, next) => {
+router.post('/back', async (ctx, next) => {
   // ctx.body = 'Hello World'
   ctx.state = {
     title: 'Welcome to pathway backend dev'
   }
   ctx.response.body = ctx.state.title
 })
+
 
 //test
 

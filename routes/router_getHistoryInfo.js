@@ -2,7 +2,7 @@ const fn_getHistoryInfo = require("../controller/get_historyInfo")
 
 module.exports = function history_router(router) {
     router.post('/back/get_history_info', async function (ctx, next) {
-      // console.log(ctx.request.body)
+      console.log(ctx.request.body)
       // ctx.state = {
       //   title: 'here is history'
       // };

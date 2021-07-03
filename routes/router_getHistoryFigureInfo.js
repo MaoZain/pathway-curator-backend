@@ -6,6 +6,7 @@ module.exports = function history_router(router) {
       // ctx.state = {
       //   title: 'here is history'
       // };
+      console.log("11",ctx)
       let historyInfo = await fn_getHistoryFigureInfo(ctx)
       ctx.response.body = historyInfo;
     })
