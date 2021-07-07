@@ -25,8 +25,8 @@ let fn_getHistoryFigureInfo = async(ctx) => {
         `SELECT R.relation_id, R.activator, R.receptor, R.relation_Bbox, R.relation_type
         FROM Relation as R
         WHERE R.fig_id = ${figId}
-        AND (SELECT G.dict_id  from gene as G where G.gene_id = R.activator) IS NOT NULL
-        AND (SELECT G2.dict_id  from gene as G2 where G2.gene_id = R.receptor) IS NOT NULL;`       
+        AND (SELECT G.dict_id  from Gene as G where G.gene_id = R.activator) IS NOT NULL
+        AND (SELECT G2.dict_id  from Gene as G2 where G2.gene_id = R.receptor) IS NOT NULL;`       
     )
 
     // get activator's and receptor's name
