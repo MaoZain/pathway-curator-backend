@@ -4,10 +4,10 @@ const path = require('path')
 const { resolve } = require("path")
 const { rejects } = require("assert")
 
-let fn_getHistoryFigureInfo = async(ctx) => {
-    console.log(ctx.request.body)
-    let userName = ctx.request.body.user_name
-    let figId = ctx.request.body.figId
+let fn_getResult = async(ctx) => {
+    // console.log(ctx.request.body)
+    // let userName = ctx.request.body.user_name
+    let figId = ctx.request.query.figId
     let base64_img = null
     let figureInfo = await fn_query(
         `SELECT fig_id, fig_name, fig_path, height, width
@@ -72,7 +72,7 @@ let fn_getHistoryFigureInfo = async(ctx) => {
     let get_base64_img = new Promise((resolve, reject) => {
         fs.readFile(figureInfo[figureInfo.length-1].fig_path, 'binary' , (err, data) => {
             if (err) {
-              console.error(err)
+              console.error("get_base64_img_err",err)
               reject(err)
             }
             const buffer = Buffer.from(data, 'binary');
@@ -93,8 +93,8 @@ let fn_getHistoryFigureInfo = async(ctx) => {
         "gene":geneInfo,
         "relation":relationInfo_2,
     }
-    // console.log(relationInfo)
+    result = JSON.stringify(result)
     return result;
 }
 
-module.exports = fn_getHistoryFigureInfo;
+module.exports = fn_getResult;

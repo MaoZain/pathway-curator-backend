@@ -16,12 +16,14 @@ const debug = require('debug')('koa2:server')
 const path = require('path')
 const fs = require('fs')
 
-const config = require('./config')
-const testRouter = require('./routes/testRouter')
-const router_getHistoryInfo = require('./routes/router_getHistoryInfo')
-const router_getHistoryFigureInfo = require('./routes/router_getHistoryFigureInfo')
+const config = require('./config');
+const testRouter = require('./routes/testRouter');
+const router_getAllHistoryInfo = require('./routes/router_getAllHistoryInfo');
+const router_getResult = require('./routes/router_getResult');
+const router_predict = require('./routes/router_predict')
 const testController = require('./routes/testController');
 const { fstat } = require('fs');
+const exec = require('child_process').exec;
 
 const port = process.env.PORT || config.port
 
@@ -59,12 +61,6 @@ app.use(async (ctx, next) => {
   console.log(`${ctx.method} ${ctx.url} - $ms`)
 })
 
-//cors
-
-
-
-
-
 router.post('/back', async (ctx, next) => {
   // ctx.body = 'Hello World'
   ctx.state = {
@@ -73,11 +69,39 @@ router.post('/back', async (ctx, next) => {
   console.log("mao",ctx.request.body)
   ctx.response.body = ctx.state.title
 })
+//************************************************************************************** */
+//test model
+//************************************************************************************** */
+// const dataPath = 'static/users/testModel/test1/'
+// const cmd = 'python3 pathway_module/body_interface.py --dataset ' + dataPath;
 
+// let result = new Promise((resolve, reject) => {
+//   exec(cmd, (error, stdout, stderr) => {
+//             if (error) {
+//                 console.log(`exec error: ${error}`);
+//                 reject('error');
+//             }else{
+//                 //get element output
+//                 fs.readFile(dataPath + 'img/input_elements.json', 'utf-8', (err, data) => {
+//                     console.log(data);
+//                     console.log("----------------------------------------");
+//                     let jsondata = JSON.parse(data);
+//                     console.log(jsondata);
+//                     //getResult[0] = jsondata;
+//                 });
+//                 //get relation output
+//                 fs.readFile(dataPath + 'img/input_relation.json', 'utf-8', (err, data) => {
+//                     console.log(data);
+//                     console.log("----------------------------------------");
+//                     let jsondata = JSON.parse(data);
+//                     //getResult[1] = jsondata;
+//                     console.log(jsondata)
+//                     resolve("success!");
+//                 });
+//             }
+//   });
 
-//test
-
-
+// })
 
 // router.post('/back/test', async (ctx, next) =>{
 //   console.log(ctx.request.body)
@@ -86,12 +110,15 @@ router.post('/back', async (ctx, next) => {
 //   }
 //   ctx.response.body = ctx.request.body
 // })
+//************************************************************************************** */
+//************************************************************************************** */
 
 //create api router
 testRouter(router);
-testController(router)
-router_getHistoryInfo(router)
-router_getHistoryFigureInfo(router)
+testController(router);
+router_getAllHistoryInfo(router);
+router_getResult(router);
+router_predict(router);
 
 app.on('error', function(err, ctx) {
   console.log(err)
