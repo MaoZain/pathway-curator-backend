@@ -15,6 +15,7 @@ const logger = require('koa-logger')
 const debug = require('debug')('koa2:server')
 const path = require('path')
 const fs = require('fs')
+const koaBody = require('koa-body');
 
 const config = require('./config');
 const testRouter = require('./routes/testRouter');
@@ -22,6 +23,7 @@ const router_getAllHistoryInfo = require('./routes/router_getAllHistoryInfo');
 const router_getResult = require('./routes/router_getResult');
 const router_predict = require('./routes/router_predict')
 const testController = require('./routes/testController');
+const router_deleteHistory = require('./routes/router_deleteHistory')
 const { fstat } = require('fs');
 const exec = require('child_process').exec;
 
@@ -39,9 +41,32 @@ app.use(cors({
   allowHeaders: ['Accept', 'Origin', 'Content-type', 'Authorization'],
 }))
 
+app.use(async (ctx, next) => {
+  try {
+    await next();
+  } catch (err) {
+    // will only respond with JSON
+    ctx.status = err.statusCode || err.status || 500;
+    ctx.body = {
+      message: err.message
+    };
+  }
+})
+
 // middlewares
-app.use(bodyparser())
-  .use(json())
+app.use(koaBody({
+  multipart:true,
+  encoding:'gzip',
+  formidable:{
+    maxFieldsSize:2 * 1024 * 1024,
+    onError:(err)=>{
+      console.log(err);
+    }
+  }
+
+}));
+// app.use(bodyparser())
+app.use(json())
   .use(logger())
   .use(require('koa-static')(__dirname + '/public'))
   .use(staticFiles(__dirname + '/static'))
@@ -72,44 +97,76 @@ router.post('/back', async (ctx, next) => {
 //************************************************************************************** */
 //test model
 //************************************************************************************** */
-// const dataPath = 'static/users/testModel/test1/'
-// const cmd = 'python3 pathway_module/body_interface.py --dataset ' + dataPath;
+ const dataPath = 'static/users/testModel/'
+ const cmd = 'python3 pathway_module/body_interface.py --dataset ' + dataPath;
 
-// let result = new Promise((resolve, reject) => {
-//   exec(cmd, (error, stdout, stderr) => {
-//             if (error) {
-//                 console.log(`exec error: ${error}`);
-//                 reject('error');
-//             }else{
-//                 //get element output
-//                 fs.readFile(dataPath + 'img/input_elements.json', 'utf-8', (err, data) => {
-//                     console.log(data);
-//                     console.log("----------------------------------------");
-//                     let jsondata = JSON.parse(data);
-//                     console.log(jsondata);
-//                     //getResult[0] = jsondata;
-//                 });
-//                 //get relation output
-//                 fs.readFile(dataPath + 'img/input_relation.json', 'utf-8', (err, data) => {
-//                     console.log(data);
-//                     console.log("----------------------------------------");
-//                     let jsondata = JSON.parse(data);
-//                     //getResult[1] = jsondata;
-//                     console.log(jsondata)
-//                     resolve("success!");
-//                 });
-//             }
-//   });
 
-// })
+ let readElements = function(){
+    return new Promise((resolve, reject) => {
+        fs.readFile(dataPath + 'img/input_elements.json', 'utf-8', (err, data) => {
+            if(err){
+                console.log(err);
+                reject(err);
+            }
+            let elements = JSON.parse(data);
+            resolve(elements);
+        });
+    })
+ }
 
-// router.post('/back/test', async (ctx, next) =>{
-//   console.log(ctx.request.body)
-//   ctx.state = {
-//     title: 'Welcome to pathway backend dev'
-//   }
-//   ctx.response.body = ctx.request.body
-// })
+  let readRelations = function(){
+    return new Promise((resolve, reject) => {
+        fs.readFile(dataPath + 'img/input_relation.json', 'utf-8', (err, data) => {
+            if(err){
+                console.log(err);
+                reject(err);
+            }
+            let relations = JSON.parse(data);
+            resolve(relations);
+        });
+    })
+ }
+
+ let predict = function() {
+    return new Promise((resolve, reject) => {
+        exec(cmd, (error, stdout, stderr) => {
+             if (error) {
+                 console.log(`exec error: ${error}`);
+                 reject('error');
+             }else{
+                resolve("predict successful!")
+             }
+        });
+
+    })
+ }
+
+ async function predict_process(){
+    let result = {elements:null, relation:null};
+    //predict
+    let predict_status = await predict();
+    if(predict_status != "error"){
+        //get element output
+        result.elements = await readElements();
+        //get relation output
+        result.relations = await readRelations();
+        console.log(result);
+    }else{
+        console.log("predict failed");
+    }
+ }
+
+// predict_process();
+
+ //-----------------------------------------------------------------------------------------------------------------------
+
+ router.post('/back/test', async (ctx, next) =>{
+   console.log(ctx.request.body)
+   ctx.state = {
+     title: 'Welcome to pathway backend dev'
+   }
+   ctx.response.body = ctx.request.body
+ })
 //************************************************************************************** */
 //************************************************************************************** */
 
@@ -119,6 +176,8 @@ testController(router);
 router_getAllHistoryInfo(router);
 router_getResult(router);
 router_predict(router);
+router_deleteHistory(router);
+
 
 app.on('error', function(err, ctx) {
   console.log(err)

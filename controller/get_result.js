@@ -4,29 +4,35 @@ const path = require('path')
 const { resolve } = require("path")
 const { rejects } = require("assert")
 
-let fn_getResult = async(ctx) => {
+let fn_getResult = async(figId) => {
     // console.log(ctx.request.body)
     // let userName = ctx.request.body.user_name
-    let figId = ctx.request.query.figId
+    // let figId = ctx.request.query.figId
     let base64_img = null
     let figureInfo = await fn_query(
         `SELECT fig_id, fig_name, fig_path, height, width
         From Figure
-        WHERE fig_id = ${figId};`       
+        WHERE fig_id = ${figId};`
     )
+    console.log("figinfo", figureInfo)
+    // let geneInfo = await fn_query(
+    //     `SELECT G.gene_id, G.dict_id, G.gene_BBox, D.gene_name
+    //     From Gene_Dictionary AS D
+    //     JOIN Gene AS G ON (G.dict_id = D.dict_id AND G.fig_id = ${figId});`
+    // )
     let geneInfo = await fn_query(
-        `SELECT G.gene_id, G.dict_id, G.gene_BBox, D.gene_name
-        From Gene_Dictionary AS D
-        JOIN Gene AS G ON (G.dict_id = D.dict_id AND G.fig_id = ${figId});`       
+        `SELECT gene_name, gene_BBox
+        From Gene
+        where fig_id = ${figId};`
     )
-
+    console.log("geneInfo", geneInfo)
 
     let relationInfo = await fn_query(
         `SELECT R.relation_id, R.activator, R.receptor, R.relation_Bbox, R.relation_type
         FROM Relation as R
         WHERE R.fig_id = ${figId}
         AND (SELECT G.dict_id  from Gene as G where G.gene_id = R.activator) IS NOT NULL
-        AND (SELECT G2.dict_id  from Gene as G2 where G2.gene_id = R.receptor) IS NOT NULL;`       
+        AND (SELECT G2.dict_id  from Gene as G2 where G2.gene_id = R.receptor) IS NOT NULL;`
     )
 
     // get activator's and receptor's name
@@ -65,7 +71,7 @@ let fn_getResult = async(ctx) => {
         }else{
             resolve(relationInfo)
         }
-        
+
     })
 
     //get figure's base64
