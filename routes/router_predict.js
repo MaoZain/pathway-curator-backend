@@ -42,13 +42,14 @@ module.exports = async function router_predict(router) {
             let file = ctx.request.files.image;
             let userName = ctx.request.body.user_name;
             let jobName = ctx.request.body.job_name;
+            let file_name_withoutEnd = file.name.split(".zip")[0];
             let filePath = path.join(__dirname, '../static/users/' + userName + '/' + jobName);
             let createPath = await fn_createPath(filePath);
             if(createPath == 'ok'){
-                let saved = await fn_saveImg(file, filePath, "test.zip");
+                let saved = await fn_saveImg(file, filePath, file.name);
                 if(saved == 'ok'){
                     console.log("saved");
-                    const zip = new StreamZip.async({ file: filePath + '/test.zip' }); //gaimingzi
+                    const zip = new StreamZip.async({ file: filePath + `/${file.name}` }); //gaimingzi
                     zip.on('extract', (entry, file) => {
                         console.log(`Extracted ${entry.name}`);
                     });
@@ -56,7 +57,7 @@ module.exports = async function router_predict(router) {
                     console.log(`Extracted ${count} entries`);
                     await zip.close();
                     let fn_rename = new Promise((resolve, rejects) => {
-                        fs.rename(filePath + '/test', filePath + '/img', function(err) {
+                        fs.rename(filePath + `/${file_name_withoutEnd}`, filePath + '/img', function(err) {
                             if (err) {
                               console.log(err);
                               resolve("err")
