@@ -2,7 +2,6 @@ const fn_query = require("../processor/qure")
 const fs = require('fs')
 const path = require('path')
 
-
 let fn_getResult = async(figId) => {
     // console.log(ctx.request.body)
     // let userName = ctx.request.body.user_name
