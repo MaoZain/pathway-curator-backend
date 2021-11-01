@@ -1,13 +1,10 @@
 const fn_predict = require("../controller/predict_new");
 const fn_predict_multiple = require("../controller/predict_multiple")
 const fn_createPath = require("../processor/createPath");
-const fn_saveImg = require("../processor/saveImg");
-const fn_insertMetaData = require("../processor/insertMetaData")
+const fn_saveImg = require("../processor/saveImg")
 const fs = require('fs');
 const path = require('path');
 const StreamZip = require('node-stream-zip');
-const { resolve } = require("path");
-const { rejects } = require("assert");
 
 module.exports = async function router_predict(router) {
     router.post('/predict', async function (ctx, next) {
@@ -23,8 +20,8 @@ module.exports = async function router_predict(router) {
             if(createPath == 'ok'){//2
                 let saved = await fn_saveImg(image, filePath+ "/img");
                 if(saved == 'ok'){//3
-                    console.log('start predict');
-                    let result = await fn_predict(userName, jobName, image.name, ctx.request.body);
+                    console.log('start predict')
+                    let result = await fn_predict(userName, jobName, image.name);
                     ctx.response.body = result;
                 }else{//3
                     let result = {
@@ -48,33 +45,31 @@ module.exports = async function router_predict(router) {
                 let saved = await fn_saveImg(file, filePath);
                 if(saved == 'ok'){
                     console.log("saved");
-                    const zip = new StreamZip.async({ file: filePath + '/test.zip' }); //gaimingzi
+                    const zip = new StreamZip.async({ file: filePath + '/test.zip' });
                     zip.on('extract', (entry, file) => {
                         console.log(`Extracted ${entry.name}`);
                     });
                     const count = await zip.extract(null, filePath + '/');
                     console.log(`Extracted ${count} entries`);
                     await zip.close();
-                    let fn_rename = new Promise((resolve, rejects) => {
-                        fs.rename(filePath + '/test', filePath + '/img', function(err) {
-                            if (err) {
-                              console.log(err);
-                              resolve("err")
-                            } else {
-                              resolve("ok")
-                              console.log("Successfully renamed the directory.")
-                            }
-                        });
-                    })
+                    fs.rename(filePath + '/test', filePath + '/img', function(err) {
+                        if (err) {
+                          console.log(err)
+                        } else {
+
+                          console.log("Successfully renamed the directory.")
+                        }
+                    });
                     
-                    let rename = await fn_rename;
-                    fn_predict_multiple(userName, jobName,ctx.request.body);
+                    fn_predict_multiple(userName, jobName);
                 }
             }
             let result = {
                 "error":"error"
             }
             ctx.response.body = JSON.stringify(result);
+
         }
+        
     })
 }

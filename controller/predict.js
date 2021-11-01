@@ -42,7 +42,7 @@ function getImageType(str){
     })
  }
 
-let readRelations = function(workPath, imgName){
+ let readRelations = function(workPath, imgName){
     let path = workPath + "img/" + imgName.split(".")[0] + "_relation.json"
     return new Promise((resolve, reject) => {
         fs.readFile(path, 'utf-8', (err, data) => {
