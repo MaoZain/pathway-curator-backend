@@ -21,7 +21,7 @@ module.exports = async function router_predict(router) {
             let filePath = path.join(__dirname, '../static/users/' + userName + '/' + jobName);
             let createPath = await fn_createPath(filePath+ "/img");
             if(createPath == 'ok'){//2
-                let saved = await fn_saveImg(image, filePath+ "/img");
+                let saved = await fn_saveImg(image, filePath+ "/img", image.name);
                 if(saved == 'ok'){//3
                     console.log('start predict');
                     let result = await fn_predict(userName, jobName, image.name, ctx.request.body);
@@ -45,7 +45,7 @@ module.exports = async function router_predict(router) {
             let filePath = path.join(__dirname, '../static/users/' + userName + '/' + jobName);
             let createPath = await fn_createPath(filePath);
             if(createPath == 'ok'){
-                let saved = await fn_saveImg(file, filePath);
+                let saved = await fn_saveImg(file, filePath, "test.zip");
                 if(saved == 'ok'){
                     console.log("saved");
                     const zip = new StreamZip.async({ file: filePath + '/test.zip' }); //gaimingzi

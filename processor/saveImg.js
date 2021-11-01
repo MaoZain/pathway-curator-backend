@@ -1,10 +1,10 @@
 const fs = require('fs');;
 const path = require('path');
 
-let saveImg = function(image, filePath){
+let saveImg = function(file, filePath, file_name){
       return new Promise((resolve, reject) => {
-          let reader = fs.createReadStream(image.path);
-          let writeStream = fs.createWriteStream(filePath+`/${image.name}`);
+          let reader = fs.createReadStream(file.path);
+          let writeStream = fs.createWriteStream(filePath+`/${file_name}`);
           reader.on('open', function(){
               console.log('start')
               reader.pipe(writeStream);
