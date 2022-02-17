@@ -28,21 +28,33 @@ let fn_getAllHistoryInfo = async(ctx) => {
             }
             for(let e of elements){
                 gene_Bbox = e.coordinates.toString();
+                let gene_name = "";
+                if(e.gene_name!=null){
+                    gene_name = e.gene_name.replace("'","")
+                }
                 let new_fig_id = await fn_query(
                     `INSERT INTO Gene
                     (fig_id, gene_BBox, gene_name)
                     values
-                    (${fig.fig_id}, '${e.gene_BBox}', '${e.gene_name}');`
+                    (${fig.fig_id}, '${e.gene_BBox}', '${gene_name}');`
                 );
             }
             for(let key in relations){
                 let e = relations[key]
                 relation_Bbox = e.bbox.toString();
+                let starter = "";
+                let receptor = "";
+                if(e.startor != null){
+                    starter = e.startor.replace("'","");
+                }
+                if(e.receptor != null){
+                    receptor = e.receptor.replace("'","");
+                }
                 var relationToDatabase = await fn_query(
                     `INSERT INTO Relation
                     (fig_id, activator, receptor, relation_type, relation_Bbox )
                     values
-                    (${fig.fig_id}, '${e.startor}', '${e.receptor}', '${e.relation_category}', '${relation_Bbox}')`
+                    (${fig.fig_id}, '${starter}', '${receptor}', '${e.relation_category}', '${relation_Bbox}')`
                 );
             }
         }

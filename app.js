@@ -16,6 +16,7 @@ const debug = require('debug')('koa2:server')
 const path = require('path')
 const fs = require('fs')
 const koaBody = require('koa-body');
+const send = require('koa-send');
 
 const config = require('./config');
 const testRouter = require('./routes/testRouter');
@@ -23,7 +24,10 @@ const router_getAllHistoryInfo = require('./routes/router_getAllHistoryInfo');
 const router_getResult = require('./routes/router_getResult');
 const router_predict = require('./routes/router_predict')
 const testController = require('./routes/testController');
-const router_deleteHistory = require('./routes/router_deleteHistory')
+const router_deleteHistory = require('./routes/router_deleteHistory');
+const router_verify_user_id = require('./routes/router_verify_user_id');
+const router_download = require('./routes/router_download');
+const router_editGeneInfo = require('./routes/router_editGeneInfo');
 const { fstat } = require('fs');
 const exec = require('child_process').exec;
 
@@ -178,11 +182,13 @@ router_getAllHistoryInfo(router);
 router_getResult(router);
 router_predict(router);
 router_deleteHistory(router);
+router_verify_user_id(router);
+router_download(router)
+router_editGeneInfo(router)
 
 
 app.on('error', function(err, ctx) {
   console.log(err)
-  logger.error('server error', err, ctx)
 })
 
 module.exports = app.listen(config.port, () => {

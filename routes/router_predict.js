@@ -6,8 +6,6 @@ const fn_insertMetaData = require("../processor/insertMetaData")
 const fs = require('fs');
 const path = require('path');
 const StreamZip = require('node-stream-zip');
-const { resolve } = require("path");
-const { rejects } = require("assert");
 
 module.exports = async function router_predict(router) {
     router.post('/predict', async function (ctx, next) {
@@ -43,6 +41,7 @@ module.exports = async function router_predict(router) {
             let userName = ctx.request.body.user_name;
             let jobName = ctx.request.body.job_name;
             let file_name_withoutEnd = file.name.split(".zip")[0];
+            console.log("get file")
             let filePath = path.join(__dirname, '../static/users/' + userName + '/' + jobName);
             let createPath = await fn_createPath(filePath);
             if(createPath == 'ok'){

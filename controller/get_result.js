@@ -13,7 +13,7 @@ let fn_getResult = async(figId) => {
         From Figure
         WHERE fig_id = ${figId};`
     )
-    console.log("figinfo", figureInfo)
+    // console.log("figinfo", figureInfo)
     // let geneInfo = await fn_query(
     //     `SELECT G.gene_id, G.dict_id, G.gene_BBox, D.gene_name
     //     From Gene_Dictionary AS D
@@ -22,16 +22,28 @@ let fn_getResult = async(figId) => {
     let geneInfo = await fn_query(
         `SELECT gene_name, gene_BBox, gene_id
         From Gene
-        where fig_id = ${figId};`
+        where fig_id = ${figId} and is_match=1;`
     )
-    console.log("geneInfo", geneInfo)
+    let obj_geneIdToName = new Object();
+    for(let e of geneInfo){
+        let geneId = e.gene_id
+        obj_geneIdToName[geneId] = e.gene_name;
+    }
+    console.log("map id to name:",obj_geneIdToName)
 
     let relationInfo = await fn_query(
         `SELECT R.relation_id, R.activator, R.receptor, R.relation_Bbox, R.relation_type
         FROM Relation as R
         WHERE R.fig_id = ${figId}`
     )
-    console.log("relationInfo", relationInfo)
+    for(let e of relationInfo){
+        // console.log(e)
+        let activator_geneId = e.activator;
+        let receptor_geneId = e.receptor;
+        e.activator = obj_geneIdToName[activator_geneId];
+        e.receptor = obj_geneIdToName[receptor_geneId];
+    }
+    // console.log("relationInfo", relationInfo)
 
     // get activator's and receptor's name
     // relationInfo.forEach(async(element, index) => {
