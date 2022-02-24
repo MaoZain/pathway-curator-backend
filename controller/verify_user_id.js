@@ -19,7 +19,7 @@ let fn_verify_user_id = async(id) => {
         u_id:id,
         status:"success"
     }
-    return result
+    return JSON.stringify( result )
 }
 
 module.exports = fn_verify_user_id;
