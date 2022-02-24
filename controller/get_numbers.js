@@ -6,7 +6,7 @@ let fn_getNumbers = async() => {
     //================
     let num_users = await fn_query(
         `select count(distinct U_name) as num
-        from Job;`
+        from User;`
     )
     let num_figures = await fn_query(
         `select count(distinct fig_id) as num
