@@ -28,7 +28,8 @@ const router_deleteHistory = require('./routes/router_deleteHistory');
 const router_verify_user_id = require('./routes/router_verify_user_id');
 const router_download = require('./routes/router_download');
 const router_editGeneInfo = require('./routes/router_editGeneInfo');
-const router_gerNumbers = require('./routes/router_getNumbers')
+const router_gerNumbers = require('./routes/router_getNumbers');
+const router_p3db = require('./routes/router_prediction_p3db');
 const { fstat } = require('fs');
 const exec = require('child_process').exec;
 
@@ -187,6 +188,7 @@ router_verify_user_id(router);
 router_download(router);
 router_editGeneInfo(router);
 router_gerNumbers(router);
+router_p3db(router);
 
 
 app.on('error', function(err, ctx) {
